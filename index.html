@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#171614">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Parfum Wardrobe">
+  <title>Parfum Wardrobe · Pocket Atelier</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="hero">
+  <div class="eyebrow">Pocket Atelier</div>
+  <h1>Parfum Wardrobe</h1>
+  <p>Live-Ranking · Working Core · G1/G2/G3 · für iPhone</p>
+  <div id="saved" class="saved">lokal auf diesem Gerät gespeichert</div>
+</header>
+<nav class="tabs">
+  <button class="tab active" data-tab="ranking">Ranking</button>
+  <button class="tab" data-tab="core">Core</button>
+  <button class="tab" data-tab="groups">Gruppen</button>
+  <button class="tab" data-tab="profile">Profil</button>
+  <button class="tab" data-tab="backup">Backup</button>
+</nav>
+<main id="view" class="shell"></main>
+<div id="install" class="install">
+  <button id="closeInstall" class="x">×</button>
+  <b>Auf dem iPhone installieren:</b> Safari → Teilen → <b>Zum Home-Bildschirm</b> → als Web-App öffnen.
+</div>
+<div id="toast" class="toast"></div>
+<input id="importFile" type="file" accept="application/json,.json" hidden>
+<script src="./data.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
