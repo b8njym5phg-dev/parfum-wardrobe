@@ -1,0 +1,8 @@
+{
+  "name": "Parfum Wardrobe",
+  "short_name": "Parfum",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f2ede4",
+  "theme_color": "#171614"
+}
