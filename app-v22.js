@@ -8,7 +8,7 @@ state.choices=state.choices||{};
 const chosen=x=>state.choices[x.id]||(state.core.includes(x.id)?'core':state.out.includes(x.id)?'out':null);
 const verdict=x=>{const c=chosen(x);return c==='core'?'CORE':c==='keep'?'BEHALTEN':c==='out'?'RAUS':score(x)===null?'OFFEN':score(x)<8.2?'RAUS':'BEHALTEN'};
 status=verdict;
-let mode='active';
+let mode='all';
 function tags(a){return (a||[]).slice(0,5).map(t=>'<span class="v22tag">'+text(t)+'</span>').join('')}
 function photo(x){const u=meta(x).img;return u?'<img loading="lazy" class="v22photo" src="'+text(u)+'" alt="'+text(x.name)+' Flakon" onerror="this.hidden=true;this.parentNode.classList.add(\'unavailable\')">':'<span class="v22placeholder">Flakonbild ausstehend</span>'}
 function go(x,ml){return 'https://www.google.com/search?tbm=shop&q='+encodeURIComponent(x.brand+' '+x.name+' '+ml+'ml Parfum kaufen')}
