@@ -23,6 +23,7 @@ for(const u of [...srcs])if(u.startsWith('https://')&&!u.includes('images.weserv
   const t=document.createElement('small');t.textContent='Fotoquelle blockiert';
   wrap.append(t,link,link2);container.append(wrap);
  });
+ if(img.complete&&img.naturalWidth===0)img.dispatchEvent(new Event('error'));
 }
 function enhance(){document.querySelectorAll('.v22figure,.coreVisual').forEach(apply)}
 const view=document.getElementById('view');if(view){new MutationObserver(enhance).observe(view,{childList:true,subtree:true});enhance()}
