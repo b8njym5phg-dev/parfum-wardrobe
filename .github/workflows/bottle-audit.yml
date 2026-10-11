@@ -1,0 +1,32 @@
+name: Validate bottle images
+on:
+  push:
+    branches: [main]
+    paths:
+      - assets/bottle-sources.json
+      - scripts/check-bottles.py
+      - .github/workflows/bottle-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install Pillow
+      - run: python scripts/check-bottles.py
+      - name: Upload complete images and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bottle-image-audit
+          path: |
+            bottles/
+            assets/bottle-audit.json
+            assets/bottle-manifest.json
+          retention-days: 14
