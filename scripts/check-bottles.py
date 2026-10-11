@@ -5,6 +5,7 @@ The output is only promoted to the site when all expected bottles are valid.
 Never substitutes an unrelated product picture.
 """
 import io, json, pathlib, urllib.request, urllib.parse, time, sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from PIL import Image, ImageOps
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
@@ -15,7 +16,7 @@ success={}
 failed=[]
 headers={"User-Agent":"Mozilla/5.0 (compatible; perfume-wardrobe-gallery/1.0)", "Accept":"image/avif,image/webp,image/png,image/jpeg,image/*"}
 def get(url):
-    with urllib.request.urlopen(urllib.request.Request(url,headers=headers),timeout=18) as response:
+    with urllib.request.urlopen(urllib.request.Request(url,headers=headers),timeout=9) as response:
         data=response.read(10_000_000)
         ct=response.headers.get("Content-Type","")
     if len(data)<800 or "text/html" in ct:
@@ -30,8 +31,7 @@ def get(url):
         canvas.alpha_composite(im,((420-im.width)//2,(520-im.height)//2))
         buf=io.BytesIO();canvas.save(buf,"WEBP",quality=86,method=6)
         return buf.getvalue()
-for item in rows:
-    valid=False
+def process(item):
     urls=list(item["urls"])
     for u in list(urls):
         if u.startswith("https://"):
@@ -41,15 +41,19 @@ for item in rows:
             data=get(u)
             target=dest/(str(item["id"])+".webp")
             target.write_bytes(data)
-            success[str(item["id"])]=str(target.relative_to(ROOT))
-            valid=True
-            print(f"OK {item['id']:02} {item['name']} ({len(data)} bytes)",flush=True)
-            break
+            return (item, str(target.relative_to(ROOT)), None)
         except Exception as e:
-            print(f"RETRY {item['id']:02} {type(e).__name__}: {str(e)[:80]}",flush=True)
-            time.sleep(.1)
-    if not valid:
-        failed.append({"id":item["id"],"name":item["name"],"sources":item["urls"]})
+            print(f"RETRY {item['id']:02} {type(e).__name__}: {str(e)[:70]}",flush=True)
+    return (item,None,{"id":item["id"],"name":item["name"],"sources":item["urls"]})
+with ThreadPoolExecutor(max_workers=12) as executor:
+    for task in as_completed([executor.submit(process,item) for item in rows]):
+        item,path,error=task.result()
+        if path:
+            success[str(item["id"])]=path
+            print(f"OK {item['id']:02} {item['name']}",flush=True)
+        else:
+            failed.append(error)
+            print(f"FAILED {item['id']:02} {item['name']}",flush=True)
 report={"validated":len(success),"expected":len(rows),"missing":failed,"generated_at":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime())}
 (ROOT/"assets/bottle-audit.json").write_text(json.dumps(report,ensure_ascii=False,indent=2))
 print("SUMMARY",json.dumps({"validated":len(success),"expected":len(rows),"missing":[x["name"] for x in failed]},ensure_ascii=False),flush=True)
