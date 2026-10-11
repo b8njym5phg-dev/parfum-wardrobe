@@ -11,6 +11,7 @@ function apply(container){
  const original=window.PW_META?.[x.id]?.img;
  const core=window.CORE_META?.[x.id]?.img;
  for(const u of [original,core])if(u&&!srcs.includes(u))srcs.push(u);
+for(const u of [...srcs])if(u.startsWith('https://')&&!u.includes('images.weserv.nl'))srcs.push('https://images.weserv.nl/?url='+encodeURIComponent(u)+'&w=500&h=650&fit=contain&we');
  img.referrerPolicy='no-referrer';
  img.addEventListener('error',()=>{
   const i=Number(img.dataset.fallback||0)+1;
